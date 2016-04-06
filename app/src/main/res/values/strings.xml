@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">The Renter Firebase</string>
+
+    <string-array name="delivery_type">
+        <item>Home Delivery</item>
+        <item>Takeaway</item>
+    </string-array>
+
+    <string-array name="shipping_type">
+        <item>Paid</item>
+        <item>Free</item>
+        <item>NA</item>
+    </string-array>
+
+    <string-array name="rental_period">
+        <item>Days</item>
+        <item>Months</item>
+    </string-array>
+
 </resources>
