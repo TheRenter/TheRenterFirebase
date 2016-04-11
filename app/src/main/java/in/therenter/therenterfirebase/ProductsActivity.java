@@ -37,6 +37,7 @@ public class ProductsActivity extends AppCompatActivity {
     private static int RESULT_LOAD_IMG = 1;
     private boolean isDays = true;
     private String imageString = "";
+    private boolean dataCapture = false;
 
     private String ProductType;
     private String Name;
@@ -76,6 +77,8 @@ public class ProductsActivity extends AppCompatActivity {
     private EditText txtProductType;
     private EditText txtTags;
     private EditText txtCategories;
+
+    private ProgressDialog pd;
 
     public static String encodeToBase64(Bitmap image, Bitmap.CompressFormat compressFormat, int quality) {
         ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
@@ -238,10 +241,12 @@ public class ProductsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                final ProgressDialog pd = new ProgressDialog(ProductsActivity.this);
+                pd = new ProgressDialog(ProductsActivity.this);
                 pd.setMessage("Loading");
                 pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 pd.setIndeterminate(true);
+                pd.setCancelable(false);
+                pd.setCanceledOnTouchOutside(false);
                 pd.show();
 
                 try {
@@ -269,6 +274,16 @@ public class ProductsActivity extends AppCompatActivity {
                     else
                         RentalPeriod = "Months";
 
+                    dataCapture = true;
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    pd.dismiss();
+                    dataCapture = false;
+                }
+
+                if (dataCapture) {
                     Firebase firebase = new Firebase("https://the-renter-test.firebaseio.com/");
 
                     Product product = new Product(imageString, Name, Brand, Model, ProductType, DeliveryType, ShippingType, Tags, Categories, RentalPeriod, Color,
@@ -307,9 +322,6 @@ public class ProductsActivity extends AppCompatActivity {
                             }
                         }
                     });
-
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         });
