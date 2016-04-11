@@ -244,67 +244,73 @@ public class ProductsActivity extends AppCompatActivity {
                 pd.setIndeterminate(true);
                 pd.show();
 
-                ProductType = txtProductType.getText().toString();
-                Tags = txtTags.getText().toString();
-                Categories = txtCategories.getText().toString();
-                Name = txtName.getText().toString();
-                Brand = txtBrand.getText().toString();
-                Model = txtModel.getText().toString();
-                Deposit = txtDeposit.getText().toString();
-                Rent1 = Integer.parseInt(txtRent1.getText().toString());
-                Rent2 = Integer.parseInt(txtRent2.getText().toString());
-                Rent3 = Integer.parseInt(txtRent3.getText().toString());
-                Rent4 = Integer.parseInt(txtRent4.getText().toString());
-                Rent5 = Integer.parseInt(txtRent5.getText().toString());
-                StockCount = txtStockCount.getText().toString();
-                Color = txtColor.getText().toString();
-                ShortDescription = txtShortDesc.getText().toString();
-                LongDescription = txtLongDesc.getText().toString();
-                ShippingCharge = txtShippingCharge.getText().toString();
+                try {
 
-                if (isDays)
-                    RentalPeriod = "Days";
-                else
-                    RentalPeriod = "Months";
+                    ProductType = txtProductType.getText().toString();
+                    Tags = txtTags.getText().toString();
+                    Categories = txtCategories.getText().toString();
+                    Name = txtName.getText().toString();
+                    Brand = txtBrand.getText().toString();
+                    Model = txtModel.getText().toString();
+                    Deposit = txtDeposit.getText().toString();
+                    Rent1 = Integer.parseInt(txtRent1.getText().toString());
+                    Rent2 = Integer.parseInt(txtRent2.getText().toString());
+                    Rent3 = Integer.parseInt(txtRent3.getText().toString());
+                    Rent4 = Integer.parseInt(txtRent4.getText().toString());
+                    Rent5 = Integer.parseInt(txtRent5.getText().toString());
+                    StockCount = txtStockCount.getText().toString();
+                    Color = txtColor.getText().toString();
+                    ShortDescription = txtShortDesc.getText().toString();
+                    LongDescription = txtLongDesc.getText().toString();
+                    ShippingCharge = txtShippingCharge.getText().toString();
 
-                Firebase firebase = new Firebase("https://the-renter-test.firebaseio.com/");
+                    if (isDays)
+                        RentalPeriod = "Days";
+                    else
+                        RentalPeriod = "Months";
 
-                Product product = new Product(imageString, Name, Brand, Model, ProductType, DeliveryType, ShippingType, Tags, Categories, RentalPeriod, Color,
-                        ShortDescription, LongDescription, Deposit, ShippingCharge, StockCount, Rent1, Rent2, Rent3, Rent4, Rent5);
+                    Firebase firebase = new Firebase("https://the-renter-test.firebaseio.com/");
 
-                Firebase newProduct = firebase.child("users");
-                newProduct.push().setValue(product, new Firebase.CompletionListener() {
-                    @Override
-                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                        pd.dismiss();
+                    Product product = new Product(imageString, Name, Brand, Model, ProductType, DeliveryType, ShippingType, Tags, Categories, RentalPeriod, Color,
+                            ShortDescription, LongDescription, Deposit, ShippingCharge, StockCount, Rent1, Rent2, Rent3, Rent4, Rent5);
 
-                        if (firebaseError != null) {
-                            Toast.makeText(ProductsActivity.this, "Some error occurred", Toast.LENGTH_SHORT).show();
-                            System.out.println("Data could not be saved. " + firebaseError.getMessage());
-                        } else {
-                            Toast.makeText(ProductsActivity.this, "Product uploaded", Toast.LENGTH_SHORT).show();
+                    Firebase newProduct = firebase.child("products");
+                    newProduct.push().setValue(product, new Firebase.CompletionListener() {
+                        @Override
+                        public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                            pd.dismiss();
 
-                            txtName.setText("");
-                            txtBrand.setText("");
-                            txtModel.setText("");
-                            txtColor.setText("");
-                            txtShortDesc.setText("");
-                            txtLongDesc.setText("");
-                            txtDeposit.setText("");
-                            txtRent1.setText("");
-                            txtRent2.setText("");
-                            txtRent3.setText("");
-                            txtRent4.setText("");
-                            txtRent5.setText("");
-                            txtStockCount.setText("");
-                            txtShippingCharge.setText("");
-                            txtProductType.setText("");
-                            txtTags.setText("");
-                            txtCategories.setText("");
-                            img.requestFocus();
+                            if (firebaseError != null) {
+                                Toast.makeText(ProductsActivity.this, "Some error occurred", Toast.LENGTH_SHORT).show();
+                                System.out.println("Data could not be saved. " + firebaseError.getMessage());
+                            } else {
+                                Toast.makeText(ProductsActivity.this, "Product uploaded", Toast.LENGTH_SHORT).show();
+
+                                txtName.setText("");
+                                txtBrand.setText("");
+                                txtModel.setText("");
+                                txtColor.setText("");
+                                txtShortDesc.setText("");
+                                txtLongDesc.setText("");
+                                txtDeposit.setText("");
+                                txtRent1.setText("");
+                                txtRent2.setText("");
+                                txtRent3.setText("");
+                                txtRent4.setText("");
+                                txtRent5.setText("");
+                                txtStockCount.setText("");
+                                txtShippingCharge.setText("");
+                                txtProductType.setText("");
+                                txtTags.setText("");
+                                txtCategories.setText("");
+                                img.requestFocus();
+                            }
                         }
-                    }
-                });
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
