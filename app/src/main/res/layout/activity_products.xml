@@ -18,9 +18,9 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/imageViewProd"
@@ -29,10 +29,10 @@
                     android:src="@mipmap/upload" />
 
                 <TextView
-                    android:layout_weight="1"
                     android:id="@+id/textViewImageName"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
 
             </LinearLayout>
 
@@ -46,12 +46,12 @@
                     android:layout_height="wrap_content"
                     android:text="Product Type" />
 
-                <AutoCompleteTextView
-                    android:id="@+id/autoCompleteProductType"
+                <EditText
+                    android:id="@+id/editTextProductType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:inputType="text" />
+                    android:inputType="textCapWords" />
 
             </LinearLayout>
 
@@ -70,7 +70,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:inputType="text" />
+                    android:inputType="textCapWords" />
 
             </LinearLayout>
 
@@ -89,7 +89,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:inputType="text" />
+                    android:inputType="textCapWords" />
 
             </LinearLayout>
 
@@ -108,7 +108,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:inputType="text" />
+                    android:inputType="textCapWords" />
 
             </LinearLayout>
 
@@ -148,6 +148,25 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:entries="@array/shipping_type"
+                    android:inputType="number" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Shipping Charge" />
+
+                <EditText
+                    android:id="@+id/editTextShippingCharge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
                     android:inputType="text" />
 
             </LinearLayout>
@@ -162,11 +181,12 @@
                     android:layout_height="wrap_content"
                     android:text="Tags" />
 
-                <MultiAutoCompleteTextView
-                    android:id="@+id/multiAutoCompleteTags"
+                <EditText
+                    android:id="@+id/editTextTags"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp" />
+                    android:layout_marginLeft="20dp"
+                    android:inputType="textCapWords"/>
 
             </LinearLayout>
 
@@ -180,11 +200,12 @@
                     android:layout_height="wrap_content"
                     android:text="Categories" />
 
-                <MultiAutoCompleteTextView
-                    android:id="@+id/multiAutoCompleteCategories"
+                <EditText
+                    android:id="@+id/editTextCategories"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp" />
+                    android:layout_marginLeft="20dp"
+                    android:inputType="textCapWords" />
 
             </LinearLayout>
 
@@ -223,7 +244,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:inputType="text" />
+                    android:inputType="textCapWords" />
 
             </LinearLayout>
 
@@ -243,7 +264,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:gravity="top|start"
-                    android:inputType="textMultiLine"
+                    android:inputType="textMultiLine|textCapSentences"
                     android:lines="4" />
 
             </LinearLayout>
@@ -264,7 +285,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:gravity="top|start"
-                    android:inputType="textMultiLine"
+                    android:inputType="textMultiLine|textCapSentences"
                     android:lines="8" />
 
             </LinearLayout>
@@ -436,7 +457,7 @@
                     android:text="Stock Count" />
 
                 <EditText
-                    android:id="@+id/editTextCount"
+                    android:id="@+id/editTextStockCount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
@@ -454,7 +475,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
-        android:onClick="done"
         android:text="Done" />
 
 </RelativeLayout>

@@ -1,8 +1,7 @@
 package in.therenter.therenterfirebase;
 
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,22 +16,16 @@ import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.ChildEventListener;
-import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.firebase.client.Query;
-import com.firebase.client.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -42,16 +35,47 @@ public class ProductsActivity extends AppCompatActivity {
     private static final String[] day = {"/day", "/7 days", "/10 days", "/15 days", "/30 days"};
     private static final String[] month = {"/month", "/3 months", "/6 months", "/9 months", "/12 months"};
     private static int RESULT_LOAD_IMG = 1;
-    private SharedPreferences preferences;
-    private SharedPreferences.Editor editor;
-    private AutoCompleteTextView auto;
-    private MultiAutoCompleteTextView auto2;
-    private MultiAutoCompleteTextView auto3;
     private boolean isDays = true;
-    private String prods;
-    private String tags;
-    private String cats;
-    private String imageString;
+    private String imageString = "";
+
+    private String ProductType;
+    private String Name;
+    private String Brand;
+    private String Model;
+    private String DeliveryType = "Home Delivery";
+    private String ShippingType = "Paid";
+    private String Tags;
+    private String Categories;
+    private String RentalPeriod;
+    private String Color;
+    private String ShortDescription;
+    private String LongDescription;
+    private String ShippingCharge;
+    private String Deposit;
+    private String StockCount;
+    private int Rent1;
+    private int Rent2;
+    private int Rent3;
+    private int Rent4;
+    private int Rent5;
+
+    private EditText txtName;
+    private EditText txtBrand;
+    private EditText txtModel;
+    private EditText txtColor;
+    private EditText txtShortDesc;
+    private EditText txtLongDesc;
+    private EditText txtDeposit;
+    private EditText txtRent1;
+    private EditText txtRent2;
+    private EditText txtRent3;
+    private EditText txtRent4;
+    private EditText txtRent5;
+    private EditText txtStockCount;
+    private EditText txtShippingCharge;
+    private EditText txtProductType;
+    private EditText txtTags;
+    private EditText txtCategories;
 
     public static String encodeToBase64(Bitmap image, Bitmap.CompressFormat compressFormat, int quality) {
         ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
@@ -73,14 +97,9 @@ public class ProductsActivity extends AppCompatActivity {
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        preferences = getPreferences(Context.MODE_PRIVATE);
-        editor = preferences.edit();
+        initialize();
 
-        auto = (AutoCompleteTextView) findViewById(R.id.autoCompleteProductType);
-        auto2 = (MultiAutoCompleteTextView) findViewById(R.id.multiAutoCompleteTags);
-        auto3 = (MultiAutoCompleteTextView) findViewById(R.id.multiAutoCompleteCategories);
-
-        ImageView img = (ImageView) findViewById(R.id.imageViewProd);
+        final ImageView img = (ImageView) findViewById(R.id.imageViewProd);
         assert img != null;
         img.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,13 +132,10 @@ public class ProductsActivity extends AppCompatActivity {
         text1.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-
             }
 
             @Override
@@ -158,7 +174,6 @@ public class ProductsActivity extends AppCompatActivity {
         arr[4] = extra5;
 
         Spinner rentalPeriod = (Spinner) findViewById(R.id.spinnerRentalPeriod);
-
         assert rentalPeriod != null;
         rentalPeriod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -180,57 +195,140 @@ public class ProductsActivity extends AppCompatActivity {
             }
         });
 
-        if (!preferences.contains("prods"))
-            editor.putString("prods", "").apply();
-        else {
-            if (!(preferences.getString("prods", "").length() == 0)) {
-                String[] abc = preferences.getString("prods", "").trim().split("\\s*,\\s*");
-                assert auto != null;
-                auto.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, abc));
-            }
-        }
-
-        auto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        Spinner deliveryType = (Spinner) findViewById(R.id.spinnerDeliveryType);
+        assert deliveryType != null;
+        deliveryType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                prods = parent.getItemAtPosition(position).toString();
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0)
+                    DeliveryType = "Home Delivery";
+                else
+                    DeliveryType = "Takeaway";
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
-        if (!preferences.contains("tags"))
-            editor.putString("tags", "").apply();
-        else {
-            if (!(preferences.getString("tags", "").length() == 0)) {
-                String[] abc = preferences.getString("tags", "").trim().split("\\s*,\\s*");
-                assert auto != null;
-                auto2.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, abc));
-            }
-        }
-
-        auto2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        Spinner shippingType = (Spinner) findViewById(R.id.spinnerShippingType);
+        assert shippingType != null;
+        shippingType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                tags = parent.getItemAtPosition(position).toString();
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0)
+                    ShippingType = "Paid";
+                else if (position == 1)
+                    ShippingType = "Free";
+                else
+                    ShippingType = "NA";
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
-        if (!preferences.contains("cats"))
-            editor.putString("cats", "").apply();
-        else {
-            if (!(preferences.getString("cats", "").length() == 0)) {
-                String[] abc = preferences.getString("cats", "").trim().split("\\s*,\\s*");
-                assert auto != null;
-                auto3.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, abc));
-            }
-        }
 
-        auto3.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        Button done = (Button) findViewById(R.id.buttonDone);
+        assert done != null;
+        done.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                cats = parent.getItemAtPosition(position).toString();
+            public void onClick(View v) {
+
+                final ProgressDialog pd = new ProgressDialog(ProductsActivity.this);
+                pd.setMessage("Loading");
+                pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                pd.setIndeterminate(true);
+                pd.show();
+
+                ProductType = txtProductType.getText().toString();
+                Tags = txtTags.getText().toString();
+                Categories = txtCategories.getText().toString();
+                Name = txtName.getText().toString();
+                Brand = txtBrand.getText().toString();
+                Model = txtModel.getText().toString();
+                Deposit = txtDeposit.getText().toString();
+                Rent1 = Integer.parseInt(txtRent1.getText().toString());
+                Rent2 = Integer.parseInt(txtRent2.getText().toString());
+                Rent3 = Integer.parseInt(txtRent3.getText().toString());
+                Rent4 = Integer.parseInt(txtRent4.getText().toString());
+                Rent5 = Integer.parseInt(txtRent5.getText().toString());
+                StockCount = txtStockCount.getText().toString();
+                Color = txtColor.getText().toString();
+                ShortDescription = txtShortDesc.getText().toString();
+                LongDescription = txtLongDesc.getText().toString();
+                ShippingCharge = txtShippingCharge.getText().toString();
+
+                if (isDays)
+                    RentalPeriod = "Days";
+                else
+                    RentalPeriod = "Months";
+
+                Firebase firebase = new Firebase("https://the-renter-test.firebaseio.com/");
+
+                Product product = new Product(imageString, Name, Brand, Model, ProductType, DeliveryType, ShippingType, Tags, Categories, RentalPeriod, Color,
+                        ShortDescription, LongDescription, Deposit, ShippingCharge, StockCount, Rent1, Rent2, Rent3, Rent4, Rent5);
+
+                Firebase newProduct = firebase.child("users");
+                newProduct.push().setValue(product, new Firebase.CompletionListener() {
+                    @Override
+                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                        pd.dismiss();
+
+                        if (firebaseError != null) {
+                            Toast.makeText(ProductsActivity.this, "Some error occurred", Toast.LENGTH_SHORT).show();
+                            System.out.println("Data could not be saved. " + firebaseError.getMessage());
+                        } else {
+                            Toast.makeText(ProductsActivity.this, "Product uploaded", Toast.LENGTH_SHORT).show();
+
+                            txtName.setText("");
+                            txtBrand.setText("");
+                            txtModel.setText("");
+                            txtColor.setText("");
+                            txtShortDesc.setText("");
+                            txtLongDesc.setText("");
+                            txtDeposit.setText("");
+                            txtRent1.setText("");
+                            txtRent2.setText("");
+                            txtRent3.setText("");
+                            txtRent4.setText("");
+                            txtRent5.setText("");
+                            txtStockCount.setText("");
+                            txtShippingCharge.setText("");
+                            txtProductType.setText("");
+                            txtTags.setText("");
+                            txtCategories.setText("");
+                            img.requestFocus();
+                        }
+                    }
+                });
             }
         });
+    }
 
+    private void initialize() {
+
+        txtProductType = (EditText) findViewById(R.id.editTextProductType);
+        txtTags = (EditText) findViewById(R.id.editTextTags);
+        txtCategories = (EditText) findViewById(R.id.editTextCategories);
+
+        txtBrand = (EditText) findViewById(R.id.editTextBrand);
+        txtColor = (EditText) findViewById(R.id.editTextColor);
+        txtDeposit = (EditText) findViewById(R.id.editTextDeposit);
+        txtLongDesc = (EditText) findViewById(R.id.editTextLongDesc);
+        txtModel = (EditText) findViewById(R.id.editTextModel);
+        txtName = (EditText) findViewById(R.id.editTextName);
+        txtRent1 = (EditText) findViewById(R.id.editTextRent1);
+        txtRent2 = (EditText) findViewById(R.id.editTextRent2);
+        txtRent3 = (EditText) findViewById(R.id.editTextRent3);
+        txtRent4 = (EditText) findViewById(R.id.editTextRent4);
+        txtRent5 = (EditText) findViewById(R.id.editTextRent5);
+        txtShortDesc = (EditText) findViewById(R.id.editTextShortDesc);
+        txtStockCount = (EditText) findViewById(R.id.editTextStockCount);
+        txtShippingCharge = (EditText) findViewById(R.id.editTextShippingCharge);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -265,7 +363,7 @@ public class ProductsActivity extends AppCompatActivity {
                 Bitmap bitmap = BitmapFactory.decodeFile(imgDecodableString);
 //                imgView.setImageBitmap(bitmap);
 
-                imageString = encodeToBase64(bitmap, Bitmap.CompressFormat.PNG, 100);
+                imageString = encodeToBase64(bitmap, Bitmap.CompressFormat.JPEG, 75);
 
             } else {
                 Toast.makeText(this, "You haven't picked Image",
@@ -276,8 +374,5 @@ public class ProductsActivity extends AppCompatActivity {
                     .show();
         }
 
-    }
-
-    public void done(View view) {
     }
 }

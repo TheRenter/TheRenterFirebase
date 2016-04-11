@@ -68,14 +68,6 @@ public class MainActivity extends AppCompatActivity {
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Firebase newUser = fb.child("users").child("nigga");
-                User nigga = new User("Nigga Figga", 1992, imageString);
-                newUser.setValue(nigga, new Firebase.CompletionListener() {
-                    @Override
-                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                        Toast.makeText(getApplicationContext(), "data uploaded", Toast.LENGTH_SHORT).show();
-                    }
-                });
             }
         });
 
@@ -92,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                            User user = postSnapshot.getValue(User.class);
-                            imgView.setImageBitmap(decodeBase64(user.getImageString()));
                         }
                     }
 

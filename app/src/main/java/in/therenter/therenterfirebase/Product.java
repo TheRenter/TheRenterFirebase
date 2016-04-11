@@ -14,9 +14,9 @@ public class Product {
     private String color;
     private String shortDesc;
     private String longDesc;
-    private int deposit;
-    private int shippingCharge;
-    private int stockValue;
+    private String deposit;
+    private String shippingCharge;
+    private String stockValue;
     private int rent1;
     private int rent2;
     private int rent3;
@@ -24,6 +24,30 @@ public class Product {
     private int rent5;
 
     public Product() {
+    }
+
+    public Product(String imageString, String name, String brand, String model, String type, String deliveryType, String shippingType, String tags, String categories, String rentalPeriodType, String color, String shortDesc, String longDesc, String deposit, String shippingCharge, String stockValue, int rent1, int rent2, int rent3, int rent4, int rent5) {
+        this.imageString = imageString;
+        this.name = name;
+        this.brand = brand;
+        this.model = model;
+        this.type = type;
+        this.deliveryType = deliveryType;
+        this.shippingType = shippingType;
+        this.tags = tags;
+        this.categories = categories;
+        this.rentalPeriodType = rentalPeriodType;
+        this.color = color;
+        this.shortDesc = shortDesc;
+        this.longDesc = longDesc;
+        this.deposit = deposit;
+        this.shippingCharge = shippingCharge;
+        this.stockValue = stockValue;
+        this.rent1 = rent1;
+        this.rent2 = rent2;
+        this.rent3 = rent3;
+        this.rent4 = rent4;
+        this.rent5 = rent5;
     }
 
     public String getImageString() {
@@ -78,15 +102,15 @@ public class Product {
         return longDesc;
     }
 
-    public int getDeposit() {
+    public String getDeposit() {
         return deposit;
     }
 
-    public int getShippingCharge() {
+    public String getShippingCharge() {
         return shippingCharge;
     }
 
-    public int getStockValue() {
+    public String getStockValue() {
         return stockValue;
     }
 
