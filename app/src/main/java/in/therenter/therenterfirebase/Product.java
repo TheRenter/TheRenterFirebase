@@ -3,8 +3,6 @@ package in.therenter.therenterfirebase;
 public class Product {
     private String imageString;
     private String name;
-    private String brand;
-    private String model;
     private String type;
     private String deliveryType;
     private String shippingType;
@@ -26,11 +24,9 @@ public class Product {
     public Product() {
     }
 
-    public Product(String imageString, String name, String brand, String model, String type, String deliveryType, String shippingType, String tags, String categories, String rentalPeriodType, String color, String shortDesc, String longDesc, String deposit, String shippingCharge, String stockValue, int rent1, int rent2, int rent3, int rent4, int rent5) {
+    public Product(String imageString, String name, String type, String deliveryType, String shippingType, String tags, String categories, String rentalPeriodType, String color, String shortDesc, String longDesc, String deposit, String shippingCharge, String stockValue, int rent1, int rent2, int rent3, int rent4, int rent5) {
         this.imageString = imageString;
         this.name = name;
-        this.brand = brand;
-        this.model = model;
         this.type = type;
         this.deliveryType = deliveryType;
         this.shippingType = shippingType;
@@ -56,14 +52,6 @@ public class Product {
 
     public String getName() {
         return name;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public String getModel() {
-        return model;
     }
 
     public String getType() {

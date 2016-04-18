@@ -1,10 +1,13 @@
 package in.therenter.therenterfirebase;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -37,12 +40,9 @@ public class ProductsActivity extends AppCompatActivity {
     private static int RESULT_LOAD_IMG = 1;
     private boolean isDays = true;
     private String imageString = "";
-    private boolean dataCapture = false;
 
     private String ProductType;
     private String Name;
-    private String Brand;
-    private String Model;
     private String DeliveryType = "Home Delivery";
     private String ShippingType = "Paid";
     private String Tags;
@@ -61,8 +61,6 @@ public class ProductsActivity extends AppCompatActivity {
     private int Rent5;
 
     private EditText txtName;
-    private EditText txtBrand;
-    private EditText txtModel;
     private EditText txtColor;
     private EditText txtShortDesc;
     private EditText txtLongDesc;
@@ -77,6 +75,8 @@ public class ProductsActivity extends AppCompatActivity {
     private EditText txtProductType;
     private EditText txtTags;
     private EditText txtCategories;
+
+    private ImageView image;
 
     private ProgressDialog pd;
 
@@ -96,15 +96,12 @@ public class ProductsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_products);
 
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        initialize();
         Firebase.setAndroidContext(this);
 
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-        initialize();
-
-        final ImageView img = (ImageView) findViewById(R.id.imageViewProd);
-        assert img != null;
-        img.setOnClickListener(new View.OnClickListener() {
+        image = (ImageView) findViewById(R.id.imageViewProd);
+        image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Create intent to Open Image applications like Gallery, Google Photos
@@ -220,12 +217,14 @@ public class ProductsActivity extends AppCompatActivity {
         shippingType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0)
+                if (position == 0) {
                     ShippingType = "Paid";
-                else if (position == 1)
+                    txtShippingCharge.setEnabled(true);
+                } else if (position == 1) {
                     ShippingType = "Free";
-                else
-                    ShippingType = "NA";
+                    txtShippingCharge.setEnabled(false);
+                    ShippingCharge = "0";
+                }
             }
 
             @Override
@@ -234,97 +233,108 @@ public class ProductsActivity extends AppCompatActivity {
             }
         });
 
-
-        Button done = (Button) findViewById(R.id.buttonDone);
-        assert done != null;
-        done.setOnClickListener(new View.OnClickListener() {
+        Button upload = (Button) findViewById(R.id.buttonUpload);
+        assert upload != null;
+        upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                pd = new ProgressDialog(ProductsActivity.this);
-                pd.setMessage("Loading");
-                pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                pd.setIndeterminate(true);
-                pd.setCancelable(false);
-                pd.setCanceledOnTouchOutside(false);
-                pd.show();
+                ConnectivityManager cm =
+                        (ConnectivityManager) ProductsActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-                try {
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                boolean isConnected = activeNetwork != null &&
+                        activeNetwork.isConnectedOrConnecting();
 
-                    ProductType = txtProductType.getText().toString();
-                    Tags = txtTags.getText().toString();
-                    Categories = txtCategories.getText().toString();
-                    Name = txtName.getText().toString();
-                    Brand = txtBrand.getText().toString();
-                    Model = txtModel.getText().toString();
-                    Deposit = txtDeposit.getText().toString();
-                    Rent1 = Integer.parseInt(txtRent1.getText().toString());
-                    Rent2 = Integer.parseInt(txtRent2.getText().toString());
-                    Rent3 = Integer.parseInt(txtRent3.getText().toString());
-                    Rent4 = Integer.parseInt(txtRent4.getText().toString());
-                    Rent5 = Integer.parseInt(txtRent5.getText().toString());
-                    StockCount = txtStockCount.getText().toString();
-                    Color = txtColor.getText().toString();
-                    ShortDescription = txtShortDesc.getText().toString();
-                    LongDescription = txtLongDesc.getText().toString();
-                    ShippingCharge = txtShippingCharge.getText().toString();
-
-                    if (isDays)
-                        RentalPeriod = "Days";
-                    else
-                        RentalPeriod = "Months";
-
-                    dataCapture = true;
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    pd.dismiss();
-                    dataCapture = false;
-                }
-
-                if (dataCapture) {
-                    Firebase firebase = new Firebase("https://the-renter-test.firebaseio.com/");
-
-                    Product product = new Product(imageString, Name, Brand, Model, ProductType, DeliveryType, ShippingType, Tags, Categories, RentalPeriod, Color,
-                            ShortDescription, LongDescription, Deposit, ShippingCharge, StockCount, Rent1, Rent2, Rent3, Rent4, Rent5);
-
-                    Firebase newProduct = firebase.child("products");
-                    newProduct.push().setValue(product, new Firebase.CompletionListener() {
-                        @Override
-                        public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                            pd.dismiss();
-
-                            if (firebaseError != null) {
-                                Toast.makeText(ProductsActivity.this, "Some error occurred", Toast.LENGTH_SHORT).show();
-                                System.out.println("Data could not be saved. " + firebaseError.getMessage());
-                            } else {
-                                Toast.makeText(ProductsActivity.this, "Product uploaded", Toast.LENGTH_SHORT).show();
-
-                                txtName.setText("");
-                                txtBrand.setText("");
-                                txtModel.setText("");
-                                txtColor.setText("");
-                                txtShortDesc.setText("");
-                                txtLongDesc.setText("");
-                                txtDeposit.setText("");
-                                txtRent1.setText("");
-                                txtRent2.setText("");
-                                txtRent3.setText("");
-                                txtRent4.setText("");
-                                txtRent5.setText("");
-                                txtStockCount.setText("");
-                                txtShippingCharge.setText("");
-                                txtProductType.setText("");
-                                txtTags.setText("");
-                                txtCategories.setText("");
-                                img.requestFocus();
-                            }
-                        }
-                    });
-                }
+                if (isConnected)
+                    uploadProduct();
+                else
+                    Toast.makeText(ProductsActivity.this, "Net not connected", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void uploadProduct() {
+        pd = new ProgressDialog(ProductsActivity.this);
+        pd.setMessage("Loading");
+        pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        pd.setIndeterminate(true);
+        pd.setCancelable(false);
+        pd.setCanceledOnTouchOutside(false);
+        pd.show();
+
+        boolean dataCapture = false;
+        try {
+
+            ProductType = txtProductType.getText().toString();
+            Tags = txtTags.getText().toString();
+            Categories = txtCategories.getText().toString();
+            Name = txtName.getText().toString();
+            Deposit = txtDeposit.getText().toString();
+            Rent1 = Integer.parseInt(txtRent1.getText().toString());
+            Rent2 = Integer.parseInt(txtRent2.getText().toString());
+            Rent3 = Integer.parseInt(txtRent3.getText().toString());
+            Rent4 = Integer.parseInt(txtRent4.getText().toString());
+            Rent5 = Integer.parseInt(txtRent5.getText().toString());
+            StockCount = txtStockCount.getText().toString();
+            Color = txtColor.getText().toString();
+            ShortDescription = txtShortDesc.getText().toString();
+            LongDescription = txtLongDesc.getText().toString();
+            ShippingCharge = txtShippingCharge.getText().toString();
+
+            if (isDays)
+                RentalPeriod = "Days";
+            else
+                RentalPeriod = "Months";
+
+            dataCapture = true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            dataCapture = false;
+            Toast.makeText(ProductsActivity.this, "Some fields might be empty", Toast.LENGTH_SHORT).show();
+        } finally {
+            pd.dismiss();
+        }
+
+        if (dataCapture) {
+            Firebase firebase = new Firebase("https://the-renter-test.firebaseio.com/");
+
+            Product product = new Product(imageString, Name, ProductType, DeliveryType, ShippingType, Tags, Categories, RentalPeriod, Color,
+                    ShortDescription, LongDescription, Deposit, ShippingCharge, StockCount, Rent1, Rent2, Rent3, Rent4, Rent5);
+
+            Firebase newProduct = firebase.child("products");
+            newProduct.push().setValue(product, new Firebase.CompletionListener() {
+                @Override
+                public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                    pd.dismiss();
+
+                    if (firebaseError != null) {
+                        Toast.makeText(ProductsActivity.this, "Some error occurred", Toast.LENGTH_SHORT).show();
+                        System.out.println("Data could not be saved. " + firebaseError.getMessage());
+                    } else {
+                        Toast.makeText(ProductsActivity.this, "Product uploaded", Toast.LENGTH_SHORT).show();
+
+                        txtName.setText("");
+                        txtColor.setText("");
+                        txtShortDesc.setText("");
+                        txtLongDesc.setText("");
+                        txtDeposit.setText("");
+                        txtRent1.setText("");
+                        txtRent2.setText("");
+                        txtRent3.setText("");
+                        txtRent4.setText("");
+                        txtRent5.setText("");
+                        txtStockCount.setText("");
+                        txtShippingCharge.setText("");
+                        txtProductType.setText("");
+                        txtTags.setText("");
+                        txtCategories.setText("");
+                        image.requestFocus();
+                    }
+                }
+            });
+        }
     }
 
     private void initialize() {
@@ -333,11 +343,9 @@ public class ProductsActivity extends AppCompatActivity {
         txtTags = (EditText) findViewById(R.id.editTextTags);
         txtCategories = (EditText) findViewById(R.id.editTextCategories);
 
-        txtBrand = (EditText) findViewById(R.id.editTextBrand);
         txtColor = (EditText) findViewById(R.id.editTextColor);
         txtDeposit = (EditText) findViewById(R.id.editTextDeposit);
         txtLongDesc = (EditText) findViewById(R.id.editTextLongDesc);
-        txtModel = (EditText) findViewById(R.id.editTextModel);
         txtName = (EditText) findViewById(R.id.editTextName);
         txtRent1 = (EditText) findViewById(R.id.editTextRent1);
         txtRent2 = (EditText) findViewById(R.id.editTextRent2);
